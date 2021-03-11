@@ -1,11 +1,9 @@
 import * as vscode from 'vscode';
 
-export type Frame = {
-  changes: readonly vscode.TextDocumentContentChangeEvent[];
-  selections: readonly vscode.Selection[];
-};
+export type Frame = readonly vscode.TextDocumentContentChangeEvent[];
 
-let buffers: [{}] = [{}];
+let buffers: [{}] = [[]];
+let isReplaying = false;
 
 export function all() {
   return buffers;
@@ -17,4 +15,12 @@ export function push(buffer: Frame[]) {
 
 export function clear() {
   buffers = [[]];
+}
+
+export function setIsReplaying(result: boolean) {
+  isReplaying = result;
+}
+
+export function getIsReplaying() {
+  return isReplaying;
 }

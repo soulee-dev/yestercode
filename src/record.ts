@@ -31,6 +31,10 @@ export default class Record {
   }
 
   private onDidChangeTextDocument(e: vscode.TextDocumentChangeEvent) {
+    if (buffers.getIsReplaying()) {
+      return;
+    }
+
     this._currentChanges = e.contentChanges;
   }
 
@@ -41,11 +45,14 @@ export default class Record {
       return;
     }
 
+    if (buffers.getIsReplaying()) {
+      return;
+    }
+
     const changes = this._currentChanges;
-    const selections = e.selections || [];
     this._currentChanges = [];
 
-    this._textChanges.push({ changes, selections });
+    this._textChanges.push(changes);
 
     this.triggerSaveOnBuffer();
   }
