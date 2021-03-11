@@ -1,6 +1,6 @@
-# yestercode README
+# 5mincode README
 
-This is the README for your extension "yestercode". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "5mincode". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 

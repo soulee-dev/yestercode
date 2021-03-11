@@ -1,6 +1,6 @@
 {
-  "name": "yestercode",
-  "displayName": "yestercode",
+  "name": "5mincode",
+  "displayName": "5min-code",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -10,22 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onCommand:5mincode.helloWorld"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "yestercode.start",
-        "title": "Start yestercode"
-      },
-      {
-        "command": "yestercode.webview",
-        "title": "Yestercode webview"
-      },
-      {
-        "command": "yestercode.replay",
-        "title": "Yestercode replay"
+        "command": "5mincode.helloWorld",
+        "title": "Hello World"
       }
     ]
   },
