@@ -16,12 +16,18 @@ export async function start(context: vscode.ExtensionContext) {
   let edits: vscode.TextEdit[] = [];
 
   textChanges.forEach((currentChange) => {
-    for (let changes of Object.values(currentChange)) {
-      let change = <vscode.TextDocumentContentChangeEvent[]>changes;
-      change.forEach((change) => {
-        edits.push(vscode.TextEdit.replace(change.range, change.text));
+    currentChange.forEach((changes) => {
+      changes.forEach((change) => {
+        if (change.text === '') {
+          edits.push(vscode.TextEdit.delete(change.range));
+        } else if (change.rangeLength === 0) {
+          edits.push(vscode.TextEdit.insert(change.range.start, change.text));
+        } else {
+          edits.push(vscode.TextEdit.replace(change.range, change.text));
+        }
+        buffers.pushReplayDecorations(change.range);
       });
-    }
+    });
   });
   let edit = new vscode.WorkspaceEdit();
   edit.set(uri, edits);
@@ -29,4 +35,8 @@ export async function start(context: vscode.ExtensionContext) {
   await vscode.workspace.applyEdit(edit).then(() => {
     buffers.setIsReplaying(false);
   });
+}
+
+export function onBackspace() {
+  vscode.commands.executeCommand('deleteLeft').then(() => {});
 }

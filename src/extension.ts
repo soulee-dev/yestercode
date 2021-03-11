@@ -7,7 +7,6 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "yestercode" is now active!');
 
   let start = vscode.commands.registerCommand('yestercode.start', () => {
-    vscode.window.showInformationMessage('Hello World from yestercode!');
     Record.start();
   });
 
@@ -20,6 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
   let webview = vscode.commands.registerCommand('yestercode.webview', () => {
     // Webview commands
   });
+
+  let backspace = vscode.commands.registerCommand(
+    'yestercode.backspace',
+    () => {
+      replay.onBackspace();
+    }
+  );
 
   context.subscriptions.push(start, play, webview);
 }

@@ -5,7 +5,6 @@ import { Frame } from './buffers';
 export default class Record {
   private timeout: NodeJS.Timer | undefined = undefined;
   private _textEditor: vscode.TextEditor | undefined;
-  private _currentChanges: readonly vscode.TextDocumentContentChangeEvent[] = [];
   private _textChanges: Frame[] = [];
 
   public static start() {
@@ -35,9 +34,12 @@ export default class Record {
       return;
     }
 
-    this._currentChanges = e.contentChanges;
+    this._textChanges.push(e.contentChanges);
+
+    this.triggerSaveOnBuffer();
   }
 
+  //
   private onDidChangeTextEditorSelection(
     e: vscode.TextEditorSelectionChangeEvent
   ) {
@@ -48,13 +50,6 @@ export default class Record {
     if (buffers.getIsReplaying()) {
       return;
     }
-
-    const changes = this._currentChanges;
-    this._currentChanges = [];
-
-    this._textChanges.push(changes);
-
-    this.triggerSaveOnBuffer();
   }
 
   private triggerSaveOnBuffer() {
@@ -69,6 +64,14 @@ export default class Record {
   }
 
   private saveOnBuffer() {
+    if (!this._textEditor) {
+      return;
+    }
+
+    this._textEditor.setDecorations(
+      buffers.getReplayDecorationType(),
+      buffers.getReplayDecorations()
+    );
     buffers.push(this._textChanges);
     this._textChanges = [];
   }

@@ -27,6 +27,13 @@
         "command": "yestercode.replay",
         "title": "Yestercode replay"
       }
+    ],
+    "keybindings": [
+      {
+        "command": "yestercode.backspace",
+        "key": "backspace",
+        "when": "editorTextFocus"
+      }
     ]
   },
   "scripts": {
