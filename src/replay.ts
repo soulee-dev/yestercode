@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import * as buffers from './buffers';
+import { Position } from 'vscode';
 
 export async function start(context: vscode.ExtensionContext) {
   const textChanges = buffers.all();
   const editor = vscode.window.activeTextEditor;
+  const textChangeDecorations: vscode.DecorationOptions[] = [];
 
   buffers.setIsReplaying(true);
 
@@ -15,8 +17,9 @@ export async function start(context: vscode.ExtensionContext) {
   let uri = editor.document.uri;
   let edits: vscode.TextEdit[] = [];
 
-  textChanges.forEach((currentChange) => {
-    currentChange.forEach((changes) => {
+  textChanges.forEach((frameList) => {
+    frameList.forEach(async (frame) => {
+      const [changes, selections] = frame;
       changes.forEach((change) => {
         if (change.text === '') {
           edits.push(vscode.TextEdit.delete(change.range));
@@ -25,18 +28,20 @@ export async function start(context: vscode.ExtensionContext) {
         } else {
           edits.push(vscode.TextEdit.replace(change.range, change.text));
         }
-        buffers.pushReplayDecorations(change.range);
+        textChangeDecorations.push({ range: change.range });
       });
     });
   });
+
   let edit = new vscode.WorkspaceEdit();
   edit.set(uri, edits);
 
   await vscode.workspace.applyEdit(edit).then(() => {
     buffers.setIsReplaying(false);
   });
-}
 
-export function onBackspace() {
-  vscode.commands.executeCommand('deleteLeft').then(() => {});
+  editor.setDecorations(
+    buffers.getReplayDecorationType(),
+    textChangeDecorations
+  );
 }

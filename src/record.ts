@@ -5,6 +5,10 @@ import { Frame } from './buffers';
 export default class Record {
   private timeout: NodeJS.Timer | undefined = undefined;
   private _textEditor: vscode.TextEditor | undefined;
+  private _currentChanges:
+    | readonly vscode.TextDocumentContentChangeEvent[]
+    | undefined;
+
   private _textChanges: Frame[] = [];
 
   public static start() {
@@ -34,9 +38,7 @@ export default class Record {
       return;
     }
 
-    this._textChanges.push(e.contentChanges);
-
-    this.triggerSaveOnBuffer();
+    this._currentChanges = e.contentChanges;
   }
 
   //
@@ -50,6 +52,14 @@ export default class Record {
     if (buffers.getIsReplaying()) {
       return;
     }
+
+    const changes = <vscode.TextDocumentContentChangeEvent[]>(
+      this._currentChanges
+    );
+    const selections = <vscode.Selection[]>e.selections || [];
+    this._textChanges.push([changes, selections]);
+
+    this.triggerSaveOnBuffer();
   }
 
   private triggerSaveOnBuffer() {
@@ -68,10 +78,7 @@ export default class Record {
       return;
     }
 
-    this._textEditor.setDecorations(
-      buffers.getReplayDecorationType(),
-      buffers.getReplayDecorations()
-    );
+    this._textEditor.setDecorations(buffers.getReplayDecorationType(), []);
     buffers.push(this._textChanges);
     this._textChanges = [];
   }

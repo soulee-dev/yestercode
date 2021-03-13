@@ -20,13 +20,6 @@ export function activate(context: vscode.ExtensionContext) {
     // Webview commands
   });
 
-  let backspace = vscode.commands.registerCommand(
-    'yestercode.backspace',
-    () => {
-      replay.onBackspace();
-    }
-  );
-
   context.subscriptions.push(start, play, webview);
 }
 

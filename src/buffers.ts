@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 
-export type Frame = readonly vscode.TextDocumentContentChangeEvent[];
+export type Frame = [
+  vscode.TextDocumentContentChangeEvent[],
+  vscode.Selection[]
+];
 
 const replayDecorationType = vscode.window.createTextEditorDecorationType({
   borderWidth: '1px',
@@ -17,8 +20,6 @@ const replayDecorationType = vscode.window.createTextEditorDecorationType({
   },
 });
 
-const replayDecorations: vscode.DecorationOptions[] = [];
-
 let buffers: Frame[][] = [];
 let isReplaying = false;
 
@@ -31,7 +32,7 @@ export function push(buffer: Frame[]) {
 }
 
 export function clear() {
-  buffers = [[]];
+  buffers = [];
 }
 
 export function poplast() {
@@ -55,12 +56,4 @@ export function getIsReplaying() {
 
 export function getReplayDecorationType() {
   return replayDecorationType;
-}
-
-export function pushReplayDecorations(range: vscode.Range) {
-  replayDecorations.push({ range: range });
-}
-
-export function getReplayDecorations() {
-  return replayDecorations;
 }
