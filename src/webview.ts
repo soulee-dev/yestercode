@@ -1,16 +1,17 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as replay from './replay';
 
 let currentPanel: vscode.WebviewPanel | undefined = undefined;
 
-export default function loadWebView(context: vscode.ExtensionContext) {
+export function loadWebView(context: vscode.ExtensionContext) {
   if (currentPanel) {
     currentPanel.reveal(vscode.ViewColumn.One);
   } else {
     currentPanel = vscode.window.createWebviewPanel(
-      'catCoding', // internal name
-      'Cat Coding', // title name
+      'yestercode',
+      'yesrercode',
       vscode.ViewColumn.One,
       {
         enableScripts: true,
@@ -32,4 +33,18 @@ export default function loadWebView(context: vscode.ExtensionContext) {
       currentPanel.webview.html = data;
     }
   );
+
+  return currentPanel;
+}
+
+export function onDidReceiveMessage(
+  message: any,
+  textEditor: vscode.TextEditor | undefined
+) {
+  switch (message.command) {
+    case 'recover':
+      console.log('wow');
+      replay.start(textEditor, Number(message.text), Number(message.text) + 1);
+      return;
+  }
 }

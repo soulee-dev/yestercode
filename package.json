@@ -18,14 +18,6 @@
       {
         "command": "yestercode.start",
         "title": "Start yestercode"
-      },
-      {
-        "command": "yestercode.webview",
-        "title": "Yestercode webview"
-      },
-      {
-        "command": "yestercode.replay",
-        "title": "Yestercode replay"
       }
     ]
   },

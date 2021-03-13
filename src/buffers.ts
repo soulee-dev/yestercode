@@ -35,15 +35,12 @@ export function clear() {
   buffers = [];
 }
 
-export function poplast() {
-  let temp = buffers.pop();
-  if (!temp) {
-    return;
-  }
+export function count() {
+  return buffers.length;
+}
 
-  temp.pop();
-
-  push(temp);
+export function get(start: number, end: number) {
+  return buffers.slice(start, end);
 }
 
 export function setIsReplaying(result: boolean) {

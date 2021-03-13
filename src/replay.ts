@@ -1,21 +1,31 @@
 import * as vscode from 'vscode';
 import * as buffers from './buffers';
-import { Position } from 'vscode';
 
-export async function start(context: vscode.ExtensionContext) {
-  const textChanges = buffers.all();
-  const editor = vscode.window.activeTextEditor;
-  const textChangeDecorations: vscode.DecorationOptions[] = [];
+export async function start(
+  textEditor: vscode.TextEditor | undefined,
+  start: number,
+  end: number
+) {
+  const textChanges = buffers.get(start, end);
+  console.log(textChanges);
 
-  buffers.setIsReplaying(true);
-
-  if (!editor) {
+  if (!textEditor) {
     vscode.window.showErrorMessage('No active editor');
     return;
   }
 
-  let uri = editor.document.uri;
+  applyChange(textEditor, textChanges);
+}
+
+async function applyChange(
+  textEditor: vscode.TextEditor,
+  textChanges: buffers.Frame[][]
+) {
+  let textChangeDecorations: vscode.DecorationOptions[] = [];
   let edits: vscode.TextEdit[] = [];
+  let uri = textEditor.document.uri;
+
+  buffers.setIsReplaying(true);
 
   textChanges.forEach((frameList) => {
     frameList.forEach(async (frame) => {
@@ -23,10 +33,8 @@ export async function start(context: vscode.ExtensionContext) {
       changes.forEach((change) => {
         if (change.text === '') {
           edits.push(vscode.TextEdit.delete(change.range));
-        } else if (change.rangeLength === 0) {
-          edits.push(vscode.TextEdit.insert(change.range.start, change.text));
         } else {
-          edits.push(vscode.TextEdit.replace(change.range, change.text));
+          edits.push(vscode.TextEdit.insert(change.range.start, change.text));
         }
         textChangeDecorations.push({ range: change.range });
       });
@@ -40,7 +48,7 @@ export async function start(context: vscode.ExtensionContext) {
     buffers.setIsReplaying(false);
   });
 
-  editor.setDecorations(
+  textEditor.setDecorations(
     buffers.getReplayDecorationType(),
     textChangeDecorations
   );

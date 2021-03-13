@@ -20,10 +20,26 @@
       min="0"
       max="0"
       id="customRange2"
-      onchange=""
+      onchange="onRangeChange(this)"
     />
+    <h3 id="count">0</h3>
   </body>
   <script>
-    function onRangeChange(this) {}
+    const vscode = acquireVsCodeApi();
+
+    window.addEventListener('message', (event) => {
+      const message = event.data;
+      document.querySelector('#count').innerText = message;
+      setMax(message);
+    });
+
+    function onRangeChange(obj) {
+      vscode.postMessage({ command: 'recover', text: obj.value });
+    }
+
+    function setMax(max) {
+      document.querySelector('#customRange2').max = String(max);
+      document.querySelector('#customRange2').value = max;
+    }
   </script>
 </html>
